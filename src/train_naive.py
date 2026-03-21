@@ -21,6 +21,11 @@ from sklearn.metrics import (
     classification_report
 )
 
+import os
+
+# Ensure the directory exists
+os.makedirs("models", exist_ok=True)
+
 def main():
     print("Loading data...")
     train_df = pd.read_csv("data/train.csv")

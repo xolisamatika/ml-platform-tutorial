@@ -15,6 +15,9 @@ from datetime import datetime
 import subprocess
 import os
 
+# Ensure the directory exists
+os.makedirs("data", exist_ok=True)
+
 def compute_merchant_features(df: pd.DataFrame) -> pd.DataFrame:
     """
     Compute aggregated features by merchant category.
