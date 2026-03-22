@@ -23,9 +23,10 @@ from sklearn.metrics import (
 )
 import pickle
 from datetime import datetime
+import os
 
 # Configure MLflow to use our tracking server
-mlflow.set_tracking_uri("http://localhost:5000")
+mlflow.set_tracking_uri(os.environ.get("MLFLOW_TRACKING_URI", "http://localhost:5000"))
 
 # Create or get the experiment
 # All runs will be grouped under this experiment name

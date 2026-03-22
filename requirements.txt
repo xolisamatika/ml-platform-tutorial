@@ -5,6 +5,7 @@ scikit-learn==1.4.0
 
 # Experiment tracking and model registry
 mlflow==2.10.0
+protobuf==4.22.5
 
 # Feature store
 feast==0.36.0

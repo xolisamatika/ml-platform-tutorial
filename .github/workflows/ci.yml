@@ -39,7 +39,7 @@ jobs:
       
       - name: Run container for API tests
         run: |
-          docker run -d -p 8000:8000 --name test-api fraud-detection-api
+          docker run -d -p 8000:8000 -e MODEL_SOURCE=local --name test-api fraud-detection-api
           sleep 10  # Wait for API to start
           curl -f http://localhost:8000/health || exit 1
       

@@ -1,25 +1,28 @@
 """
-Serve fraud detection model with input validation.
+Serve fraud detection model from MLflow Model Registry.
 
-This version adds data validation BEFORE making predictions:
-- Invalid inputs are rejected with HTTP 400 and clear error messages
-- Valid inputs are processed and predictions returned
-
-This is much safer than the naive version which accepted garbage.
+This version loads the @champion model from MLflow, which means:
+- Always serves the latest @champion model
+- Can roll back by changing the @champion alias
+- No manual file copying needed
 """
 import pickle
+import os
 from fastapi import FastAPI, HTTPException
-from models import PredictionResponse, Transaction, ValidationErrorResponse
+from src.model_loader import load_model
+from src.models import PredictionResponse, Transaction, ValidationErrorResponse
 from src.data_validation import validate_transaction
 
-# Load model
-with open("models/model.pkl", "rb") as f:
-    model, encoder = pickle.load(f)
+model, encoder = load_model()
+
+with open("encoder.pkl", "rb") as f:
+    encoder = pickle.load(f)
+print("Encoder loaded successfully!")
 
 app = FastAPI(
-    title="Fraud Detection API (Validated)",
+    title="Fraud Detection API (MLflow)",
     description="""
-    Fraud detection API with input validation.
+    Fraud detection API  with input validation that loads models from MLflow Model Registry.
     
     All inputs are validated before prediction:
     - amount: Must be positive and below $50,000
@@ -28,10 +31,18 @@ app = FastAPI(
     - merchant_category: Must be one of: grocery, restaurant, retail, online, travel
     
     Invalid inputs return HTTP 400 with detailed error messages.
+    
+    This version always serves the model with the @champion alias.
+    To update the model:
+    1. Train a new model with train_mlflow.py
+    2. Compare metrics in MLflow UI
+    3. Promote the best model to Production
+    4. Restart this API
+    
+    To roll back: Move the @champion alias to a previous version in MLflow UI.
     """,
-    version="3.0.0"
+    version="4.0.0"
 )
-
 
 @app.post("/predict", response_model=PredictionResponse, responses={400: {"model": ValidationErrorResponse}})
 def predict(tx: Transaction):
@@ -71,3 +82,13 @@ def predict(tx: Transaction):
 @app.get("/health")
 def health():
     return {"status": "healthy", "validation": "enabled"}
+
+@app.get("/model-info")
+def model_info():
+    """Get information about the currently loaded model."""
+    return {
+        "registry": "MLflow",
+        "model_name": "fraud-detection-model",
+        "alias": "champion",
+        "tracking_uri": "http://localhost:5000"
+    }
