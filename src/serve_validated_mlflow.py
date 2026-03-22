@@ -6,18 +6,12 @@ This version loads the @champion model from MLflow, which means:
 - Can roll back by changing the @champion alias
 - No manual file copying needed
 """
-import pickle
-import os
 from fastapi import FastAPI, HTTPException
 from src.model_loader import load_model
 from src.models import PredictionResponse, Transaction, ValidationErrorResponse
 from src.data_validation import validate_transaction
 
 model, encoder = load_model()
-
-with open("encoder.pkl", "rb") as f:
-    encoder = pickle.load(f)
-print("Encoder loaded successfully!")
 
 app = FastAPI(
     title="Fraud Detection API (MLflow)",

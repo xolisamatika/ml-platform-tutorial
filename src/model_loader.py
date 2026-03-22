@@ -22,6 +22,9 @@ def load_model():
             model = mlflow.sklearn.load_model("models:/fraud-detection-model@champion")
             print("Successfully loaded champion model from MLflow!")
         
+            # with open("encoder.pkl", "rb") as f:
+            #     encoder = pickle.load(f)
+            # print("Encoder loaded successfully!")
             return model, None
         except Exception as e:
             print(f"Error loading from MLflow: {e}")
