@@ -16,7 +16,7 @@ def load_model():
     elif source == "mlflow":
         print("Loading model from MLflow Model Registry...")
 
-        mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://mlflow:5000"))
+        mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000"))
 
         try:
             model = mlflow.sklearn.load_model("models:/fraud-detection-model@champion")
